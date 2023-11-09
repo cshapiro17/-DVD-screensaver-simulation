@@ -55,10 +55,10 @@ void Engine::initShaders() {
 }
 
 void Engine::initShapes() {
-    int numberOfBubbles = 30;
-    float minRadius = 30;
-    float maxRadius = 40;
-    float maxSpeed = 100;
+    int numberOfBubbles = 20;
+    float minRadius = 10;
+    float maxRadius = 30;
+    float maxSpeed = 150;
 
     for (int i = 0; i < numberOfBubbles; ++i) {
         float x = rand() % WIDTH;
@@ -111,6 +111,26 @@ void Engine::checkBounds(unique_ptr<Circle> &bubble) const {
     if (position.y + bubbleRadius >= HEIGHT) {
         position.y = HEIGHT - bubbleRadius;
         velocity.y = -velocity.y;
+    }
+
+    if (position.x - bubbleRadius < 50) {
+        velocity.x = 100;
+        velocity.y = 100;
+    }
+
+    if (position.x - bubbleRadius > (WIDTH - 50)) {
+        velocity.x = -100;
+        velocity.y = -100;
+    }
+
+    if (position.y - bubbleRadius < 50) {
+        velocity.x = -100;
+        velocity.y = 100;
+    }
+
+    if (position.y - bubbleRadius > (HEIGHT - 50)) {
+        velocity.x = 100;
+        velocity.y = -100;
     }
 
     bubble->setPos(position);
