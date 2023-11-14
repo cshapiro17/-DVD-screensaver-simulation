@@ -47,31 +47,17 @@ unsigned int Engine::initWindow(bool debug) {
 
 void Engine::initShaders() {
     shaderManager = make_unique<ShaderManager>();
-    shapeShader = this->shaderManager->loadShader("../res/shaders/circle.vert",
-                                                  "../res/shaders/circle.frag",
-                                                  nullptr, "circle");
+    shapeShader = this->shaderManager->loadShader("../res/shaders/shape.vert",
+                                                  "../res/shaders/shape.frag",
+                                                  nullptr, "shape");
     shapeShader.use();
     shapeShader.setMatrix4("projection", this->PROJECTION);
 }
 
 void Engine::initShapes() {
-    int numberOfBubbles = 20;
-    float minRadius = 10;
-    float maxRadius = 30;
-    float maxSpeed = 150;
 
-    for (int i = 0; i < numberOfBubbles; ++i) {
-        float x = rand() % WIDTH;
-        float y = rand() % HEIGHT;
-        float radius = rand() % int(maxRadius - minRadius) + minRadius;
-        vec2 position(x, y);
-        vec2 velocity(rand() % int(maxSpeed), rand() % int(maxSpeed));
-        // get 3 random floats between 0 and 1 for RGB
-        vec4 randomColor(rand() % 255 / 255.0f, rand() % 255 / 255.0f, rand() % 255 / 255.0f, rand() % 120 + 135);
-        unique_ptr<Circle> bubble = make_unique<Circle>(shapeShader, position, radius, velocity, randomColor);
-        bubble->setVelocity(velocity);
-        bubbles.push_back(std::move(bubble));
-    }
+    // Make a 50x30 white rectangle
+    dvd = make_unique<Rect>(shapeShader, vec2(WIDTH / 2, HEIGHT / 2), vec2(50, 30), vec2(100, 100), WHITE);
 }
 
 void Engine::processInput() {
@@ -88,53 +74,33 @@ void Engine::processInput() {
 }
 
 
-void Engine::checkBounds(unique_ptr<Circle> &bubble) const {
-    vec2 position = bubble->getPos();
-    vec2 velocity = bubble->getVelocity();
-    float bubbleRadius = bubble->getRadius();
+void Engine::checkBounds(unique_ptr<Rect> &dvd) const {
+    vec2 position = dvd->getPos();
+    vec2 velocity = dvd->getVelocity();
+    vec2 size = dvd->getSize();
 
     position += velocity * deltaTime;
 
     // If any bubble hits the edges of the screen, bounce it in the other direction
-    if (position.x - bubbleRadius <= 0) {
-        position.x = bubbleRadius;
+    if (position.x - (size.x / 2) <= 0) {
+        position.x = (size.x / 2);
         velocity.x = -velocity.x;
     }
-    if (position.x + bubbleRadius >= WIDTH) {
-        position.x = WIDTH - bubbleRadius;
+    if (position.x + (size.x / 2) >= WIDTH) {
+        position.x = WIDTH - (size.x / 2);
         velocity.x = -velocity.x;
     }
-    if (position.y - bubbleRadius <= 0) {
-        position.y = bubbleRadius;
+    if (position.y - (size.y / 2) <= 0) {
+        position.y = (size.y / 2);
         velocity.y = -velocity.y;
     }
-    if (position.y + bubbleRadius >= HEIGHT) {
-        position.y = HEIGHT - bubbleRadius;
+    if (position.y + (size.y / 2) >= HEIGHT) {
+        position.y = HEIGHT - (size.y / 2);
         velocity.y = -velocity.y;
     }
 
-    if (position.x - bubbleRadius < 50) {
-        velocity.x = 100;
-        velocity.y = 100;
-    }
-
-    if (position.x - bubbleRadius > (WIDTH - 50)) {
-        velocity.x = -100;
-        velocity.y = -100;
-    }
-
-    if (position.y - bubbleRadius < 50) {
-        velocity.x = -100;
-        velocity.y = 100;
-    }
-
-    if (position.y - bubbleRadius > (HEIGHT - 50)) {
-        velocity.x = 100;
-        velocity.y = -100;
-    }
-
-    bubble->setPos(position);
-    bubble->setVelocity(velocity);
+    dvd->setPos(position);
+    dvd->setVelocity(velocity);
 }
 
 void Engine::update() {
@@ -143,6 +109,7 @@ void Engine::update() {
     deltaTime = currentFrame - lastFrame;
     lastFrame = currentFrame;
 
+    /*
     for (unique_ptr<Circle> &bubble: bubbles) {
         // Prevent bubbles from moving off screen
         checkBounds(bubble);
@@ -153,6 +120,11 @@ void Engine::update() {
             }
         }
     }
+    */
+
+    // Need to adapt for a rectangle
+    // Prevent dvd from moving offscreen
+    checkBounds(dvd);
 }
 
 void Engine::render() {
@@ -161,10 +133,15 @@ void Engine::render() {
 
     shapeShader.use();
 
+    /*
     for (unique_ptr<Circle>& bubble : bubbles) {
         bubble->setUniforms();
         bubble->draw();
     }
+    */
+
+    dvd->setUniforms();
+    dvd->draw();
 
     glfwSwapBuffers(window);
 }

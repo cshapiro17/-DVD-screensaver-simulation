@@ -1,18 +1,18 @@
 #include "rect.h"
 #include "circle.h"
 
-Rect::Rect(Shader & shader, vec2 pos, vec2 size, struct color color) : Shape(shader, pos, size, color) {
+Rect::Rect(Shader & shader, vec2 pos, vec2 size, vec2 velocity, struct color color) : Shape(shader, pos, size, velocity, color) {
     initVectors();
     initVAO();
     initVBO();
     initEBO();
 }
 
-Rect::Rect(Shader &shader, vec2 pos, float width, struct color color)
-    : Rect(shader, pos, vec2(width, width), color) {}
+//Rect::Rect(Shader &shader, vec2 pos, float width, struct color color)
+//    : Rect(shader, pos, vec2(width, width), color) {}
 
-Rect::Rect(Shader &shader, vec2 pos, float width, vec4 color)
-    : Rect(shader, pos, vec2(width, width), color) {}
+//Rect::Rect(Shader &shader, vec2 pos, float width, vec4 color)
+//    : Rect(shader, pos, vec2(width, width), color) {}
 
 Rect::~Rect() {
     glDeleteVertexArrays(1, &VAO);

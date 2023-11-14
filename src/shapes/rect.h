@@ -18,13 +18,13 @@ public:
     /// @param pos The position of the square
     /// @param size The size of the square
     /// @param color The color of the square
-    Rect(Shader & shader, vec2 pos, vec2 size, struct color color);
+    Rect(Shader & shader, vec2 pos, vec2 size, vec2 velocity, struct color color);
 
     // Overloaded constructor with only width (assuming square) using struct color
-    Rect(Shader &shader, vec2 pos, float width, struct color color);
+    //Rect(Shader &shader, vec2 pos, float width, struct color color);
 
     // Overloaded constructor with only width (assuming square) using vec4 color
-    Rect(Shader &shader, vec2 pos, float width, vec4 color);
+    //Rect(Shader &shader, vec2 pos, float width, vec4 color);
 
     Rect(Rect const& other);
 

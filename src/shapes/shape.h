@@ -15,9 +15,9 @@ class Shape {
         /// @param pos The position of the shape
         /// @param size The size of the shape
         /// @param color The color of the shape
-        Shape(Shader& shader, vec2 pos, vec2 size, color color);
+        Shape(Shader& shader, vec2 pos, vec2 size, vec2 velocity, color color);
 
-        Shape(Shader& shader, vec2 pos, vec2 size, vec4 color);
+        Shape(Shader& shader, vec2 pos, vec2 size, vec2 velocity, vec4 color);
 
         /// @brief Copy constructor for Shape
         Shape(Shape const& other);

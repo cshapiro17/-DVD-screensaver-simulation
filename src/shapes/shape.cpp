@@ -1,13 +1,13 @@
 #include "shape.h"
 
-Shape::Shape(Shader &shader, glm::vec2 pos, glm::vec2 size, struct color color) :
-    shader(shader), pos(pos), size(size), color(color) {}
+Shape::Shape(Shader &shader, glm::vec2 pos, glm::vec2 size, glm::vec2 velocity, struct color color) :
+    shader(shader), pos(pos), size(size), velocity(velocity), color(color) {}
 
 Shape::Shape(Shape const& other) :
-    shader(other.shader), pos(other.pos), size(other.size), color(other.color) {}
+    shader(other.shader), pos(other.pos), size(other.size), velocity(other.velocity), color(other.color) {}
 
-Shape::Shape(Shader &shader, glm::vec2 pos, vec2 size, vec4 color) :
-    shader(shader), pos(pos), size(size), color(color) {}
+Shape::Shape(Shader &shader, glm::vec2 pos, vec2 size, vec2 velocity, vec4 color) :
+    shader(shader), pos(pos), size(size), velocity(velocity), color(color) {}
 
 
 // Initialize VAO

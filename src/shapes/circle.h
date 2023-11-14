@@ -22,7 +22,7 @@ public:
     /// @details This is the main constructor for the Circle class.
     /// @details All other constructors call this constructor.
     Circle(Shader &shader, vec2 pos, vec2 size, vec2 velocity, vec4 color)
-        : Shape(shader, pos, size, color), radius(size.x / 2.0f), velocity(velocity) {
+        : Shape(shader, pos, size, velocity, color), radius(size.x / 2.0f), velocity(velocity) {
         initVectors();
         initVAO();
         initVBO();

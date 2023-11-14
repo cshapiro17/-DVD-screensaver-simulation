@@ -7,7 +7,6 @@
 #include <GLFW/glfw3.h>
 
 #include "shaderManager.h"
-#include "../shapes/circle.h"
 #include "../shapes/rect.h"
 #include "../shapes/shape.h"
 
@@ -30,8 +29,7 @@ class Engine {
         unique_ptr<ShaderManager> shaderManager;
 
         // Shapes
-        vector<unique_ptr<Circle>> bubbles;
-        const int RADIUS = 50;
+        unique_ptr<Rect> dvd;
 
         // Shaders
         Shader shapeShader;
@@ -93,11 +91,8 @@ class Engine {
         // 4th quadrant
         // mat4 PROJECTION = ortho(0.0f, static_cast<float>(WIDTH), static_cast<float>(HEIGHT), 0.0f, -1.0f, 1.0f);
 
-        /// @brief Checks for collisions between all bubbles
-        void checkCollisions();
-
-        /// @brief Prevents bubbles from going off screen
-        void checkBounds(unique_ptr<Circle> &bubble) const;
+        /// @brief Prevents dvd from going off screen
+        void checkBounds(unique_ptr<Rect> &dvd) const;
 
 };
 

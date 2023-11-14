@@ -1,7 +1,7 @@
 #include "triangle.h"
 
 Triangle::Triangle(Shader & shader, vec2 pos, vec2 size, struct color color)
-    : Shape(shader, pos, size, color) {
+    : Shape(shader, pos, size, velocity, color) {
     // Check if a triangle has been initialized
     initVectors();
     initVAO();
