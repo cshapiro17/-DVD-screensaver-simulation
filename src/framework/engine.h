@@ -9,6 +9,7 @@
 #include "shaderManager.h"
 #include "../shapes/rect.h"
 #include "../shapes/shape.h"
+#include "fontRenderer.h"
 
 using std::vector, std::unique_ptr, std::make_unique, glm::ortho, glm::mat4, glm::vec3, glm::vec4;
 
@@ -24,17 +25,27 @@ class Engine {
         /// @brief The width and height of the window.
         const unsigned int WIDTH = 800, HEIGHT = 600; // Window dimensions
 
+        /// @brief Keyboard state (True if pressed, false if not pressed).
+        /// @details Index this array with GLFW_KEY_{key} to get the state of a key.
+        bool keys[1024];
+
         /// @brief Responsible for loading and storing all the shaders used in the project.
         /// @details Initialized in initShaders()
         unique_ptr<ShaderManager> shaderManager;
+
+        /// @brief Responsible for rendering text on the screen.
+        /// @details Initialized in initShaders()
+        unique_ptr<FontRenderer> fontRenderer;
 
         // Shapes
         unique_ptr<Rect> dvd;
 
         // Shaders
         Shader shapeShader;
+        Shader textShader;
 
         double mouseX, mouseY;
+        bool mousePressedLastFrame = false;
 
     public:
         /// @brief Constructor for the Engine class.
@@ -71,6 +82,9 @@ class Engine {
         float deltaTime = 0.0f; // Time between current frame and last frame
         float lastFrame = 0.0f; // Time of last frame (used to calculate deltaTime)
 
+        int wallsHit = 0;
+        int cornersHit = 0;
+
         // -----------------------------------
         // Getters
         // -----------------------------------
@@ -92,7 +106,7 @@ class Engine {
         // mat4 PROJECTION = ortho(0.0f, static_cast<float>(WIDTH), static_cast<float>(HEIGHT), 0.0f, -1.0f, 1.0f);
 
         /// @brief Prevents dvd from going off screen
-        void checkBounds(unique_ptr<Rect> &dvd) const;
+        void checkBounds(unique_ptr<Rect> &dvd);
 
 };
 
