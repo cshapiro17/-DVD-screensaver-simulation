@@ -1,13 +1,28 @@
-# M4OEP-cmshapir
+# DVD Screensaver Simulation
+_____________________________________________
+The inspiration for this project is to replicate the frustration of watching
+the bouncing DVD logo screensaver just barely miss hitting the corner perfectly
+just like that one scene from The Office.
 
-Charlie Shapiro
+### Project Features
+- A bouncing rectangle to model the DVD logo
+- Color change on the left click of a mouse
+- Velocity change using the arrow keys
+- Statistics tracking (walls hit and corners hit)
+- A surprise when the rectangle finally hits a corner!
 
-## Summary of Program
+_____________________________________________
+#### Project contributions authored by myself
+- In engine.cpp
+  - initshapes()
+  - processInput()
+  - checkBounds()
+  - checkConfettiBounds()
+  - update()
+  - render()
+  - spawnConfetti()
 
-## Module 4 Concepts Used
+Aside from small implementation updates in other classes, the remainder of the
+code was generously contributed by Professor Lisa Dion in the form of starter 
+code for other projects in the course.
 
-## Known Bugs
-
-## Future Work
-
-## Grade I Think I Have Earened
