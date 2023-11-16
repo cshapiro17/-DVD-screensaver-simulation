@@ -39,6 +39,7 @@ class Engine {
 
         // Shapes
         unique_ptr<Rect> dvd;
+        vector<unique_ptr<Rect>> confetti;
 
         // Shaders
         Shader shapeShader;
@@ -70,6 +71,9 @@ class Engine {
         /// @details (e.g. keyboard input, mouse input, etc.)
         void processInput();
 
+        /// @brief Pushes back a new colored rectangle to the confetti vector.
+        void spawnConfetti();
+
         /// @brief Updates the game state.
         /// @details (e.g. collision detection, delta time, etc.)
         void update();
@@ -82,8 +86,12 @@ class Engine {
         float deltaTime = 0.0f; // Time between current frame and last frame
         float lastFrame = 0.0f; // Time of last frame (used to calculate deltaTime)
 
+        // Keep track of walls and corners
         int wallsHit = 0;
         int cornersHit = 0;
+
+        // Boolean to determine if confetti items are present on the screen
+        bool confettiOnScreen = false;
 
         // -----------------------------------
         // Getters
@@ -107,6 +115,9 @@ class Engine {
 
         /// @brief Prevents dvd from going off screen
         void checkBounds(unique_ptr<Rect> &dvd);
+
+        /// @brief Updates the position of the confetti pieces
+        void checkConfettiBounds(unique_ptr<Rect> &confetti);
 
 };
 

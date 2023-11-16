@@ -1,7 +1,11 @@
 #include "engine.h"
+#include <iostream>
 #include <string>
+#include <vector>
 
-enum state {play, pause, over};
+using namespace std;
+
+enum state {play, pause};
 state screen;
 
 const color WHITE(1, 1, 1);
@@ -71,6 +75,8 @@ void Engine::initShapes() {
 
     // Make a 50x30 white rectangle
     dvd = make_unique<Rect>(shapeShader, vec2(WIDTH / 2, HEIGHT / 2), vec2(50, 30), vec2(100, 100), WHITE);
+
+
 }
 
 void Engine::processInput() {
@@ -165,22 +171,46 @@ void Engine::checkBounds(unique_ptr<Rect> &dvd) {
     // Determine if a corner has been hit
     if (position.x - (size.x / 2) <= 0 && position.y - (size.y / 2) <= 0 && screen == play) {
         cornersHit++;
+        spawnConfetti();
     }
     if (position.x + (size.x / 2) >= WIDTH && position.y - (size.y / 2) <= 0 && screen == play) {
         cornersHit++;
+        spawnConfetti();
     }
     if (position.x - (size.x / 2) <= 0 && position.y + (size.y / 2) >= HEIGHT && screen == play) {
         cornersHit++;
+        spawnConfetti();
     }
     if (position.x + (size.x / 2) >= WIDTH && position.y + (size.y / 2) >= HEIGHT && screen == play) {
         cornersHit++;
+        spawnConfetti();
     }
 
     dvd->setPos(position);
     dvd->setVelocity(velocity);
 }
 
+void Engine::checkConfettiBounds(unique_ptr<Rect> &confetti) {
+
+    vec2 velocity = confetti->getVelocity();
+    vec2 position = confetti->getPos();
+    vec2 size = confetti->getSize();
+
+    position += velocity * deltaTime;
+
+    velocity.y = velocity.y - 2;
+
+    if (position.y + (size.y / 2) >= 0 && screen == play) {
+        confettiOnScreen = true;
+    }
+
+    confetti->setVelocity(velocity);
+    confetti->setPos(position);
+}
+
 void Engine::update() {
+    // Set confetti on screen to false
+    confettiOnScreen = false;
 
     // Calculate delta time
     float currentFrame = glfwGetTime();
@@ -190,6 +220,15 @@ void Engine::update() {
     // Prevent dvd from moving offscreen
     if (screen == play) {
         checkBounds(dvd);
+
+        for (int i = 0; i < confetti.size(); i++) {
+            checkConfettiBounds(confetti[i]);
+        }
+    }
+
+    // Clear the confetti vector if there are no more confetti on the screen
+    if (!(confettiOnScreen)) {
+        confetti.clear();
     }
 }
 
@@ -198,13 +237,6 @@ void Engine::render() {
     glClear(GL_COLOR_BUFFER_BIT);
 
     shapeShader.use();
-
-    /*
-    for (unique_ptr<Circle>& bubble : bubbles) {
-        bubble->setUniforms();
-        bubble->draw();
-    }
-    */
 
     // Render differently depending on screen
     switch (screen) {
@@ -222,6 +254,15 @@ void Engine::render() {
         case play: {
             string message = "Press P to pause";
 
+            // Display confetti
+            for (int i = 0; i < confetti.size(); i++) {
+                confetti[i]->setUniforms();
+                confetti[i]->draw();
+            }
+
+            // Clear the confetti vector
+            //confetti.clear();
+
             // Display rectangle
             dvd->setUniforms();
             dvd->draw();
@@ -230,17 +271,38 @@ void Engine::render() {
             fontRenderer->renderText(message, (WIDTH / 2) - 100, (HEIGHT / 2), 0.5, vec3{1, 1, 1});
             break;
         }
-        case over: {
-
-            /*
-            string message = "You win!";
-            // Display the message on the screen
-            fontRenderer->renderText(message, (width / 2) - 25, (height / 2), 0.5, vec3{1, 1, 1});
-            break;
-             */
-        }
     }
     glfwSwapBuffers(window);
+}
+
+void Engine::spawnConfetti() {
+    int numConfetti = 100;
+
+    // Create 100 confetti
+    for (int i = 0; i < numConfetti; i++) {
+        // Initialize position of confetti
+        vec2 pos = {0, 0};
+        // Initialize the velocity of the confetti
+        vec2 velocity = {0, 0};
+
+        // We want some confetti to spawn on the right and some to spawn on the left
+        int pickPos = rand() % 2;
+        if (pickPos == 0) {
+            pos = {0, HEIGHT / 2};
+            velocity = {rand() % 100 + 75, rand() % 75 + 30};
+        } else {
+            pos = {WIDTH, HEIGHT / 2};
+            velocity = {-(rand() % 100 + 75), rand() % 75 + 30};
+        }
+
+        // Set the size of the confetti
+        vec2 size = {10, 10};
+
+        // Set the color of the confetti
+        color color = {float(rand() % 10 / 10.0), float(rand() % 10 / 10.0), float(rand() % 10 / 10.0), 1.0f};
+
+        confetti.push_back(make_unique<Rect>(shapeShader, pos, size, velocity, color));
+    }
 }
 
 bool Engine::shouldClose() {
