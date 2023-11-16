@@ -1,13 +1,11 @@
 #include "engine.h"
-#include <iostream>
 #include <string>
-#include <vector>
 
-using namespace std;
-
+// Create game states
 enum state {play, pause};
 state screen;
 
+// Create colors
 const color WHITE(1, 1, 1);
 const color BLACK(0, 0, 0);
 const color BLUE(0, 0, 1);
@@ -72,11 +70,8 @@ void Engine::initShaders() {
 }
 
 void Engine::initShapes() {
-
-    // Make a 50x30 white rectangle
+    // Make a 50x30 white rectangle for initialization
     dvd = make_unique<Rect>(shapeShader, vec2(WIDTH / 2, HEIGHT / 2), vec2(50, 30), vec2(100, 100), WHITE);
-
-
 }
 
 void Engine::processInput() {
@@ -90,10 +85,12 @@ void Engine::processInput() {
             keys[key] = false;
     }
 
+    // Pause if the "P" key is pressed
     if (screen == play && glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
         screen = pause;
     }
 
+    // If paused, return to game if "Backspace" is pressed
     if (screen == pause && glfwGetKey(window, GLFW_KEY_BACKSPACE) == GLFW_PRESS) {
         screen = play;
     }
@@ -140,35 +137,37 @@ void Engine::processInput() {
 
 
 void Engine::checkBounds(unique_ptr<Rect> &dvd) {
+    // Get position, velocity, and size of the moving rectangle
     vec2 position = dvd->getPos();
     vec2 velocity = dvd->getVelocity();
     vec2 size = dvd->getSize();
 
+    // Get new position
     position += velocity * deltaTime;
 
-    // If any bubble hits the edges of the screen, bounce it in the other direction
-    if (position.x - (size.x / 2) <= 0 && screen == play) {
+    // If the rectangle hits the edges of the screen, bounce it in the other direction
+    if (position.x - (size.x / 2) <= 0 && screen == play) {  // Hits left wall
         position.x = (size.x / 2);
         velocity.x = -velocity.x;
         wallsHit++;
     }
-    if (position.x + (size.x / 2) >= WIDTH && screen == play) {
+    if (position.x + (size.x / 2) >= WIDTH && screen == play) {  // Hits right wall
         position.x = WIDTH - (size.x / 2);
         velocity.x = -velocity.x;
         wallsHit++;
     }
-    if (position.y - (size.y / 2) <= 0 && screen == play) {
+    if (position.y - (size.y / 2) <= 0 && screen == play) {  // Hits bottom wall
         position.y = (size.y / 2);
         velocity.y = -velocity.y;
         wallsHit++;
     }
-    if (position.y + (size.y / 2) >= HEIGHT && screen == play) {
+    if (position.y + (size.y / 2) >= HEIGHT && screen == play) {  // Hits top wall
         position.y = HEIGHT - (size.y / 2);
         velocity.y = -velocity.y;
         wallsHit++;
     }
 
-    // Determine if a corner has been hit
+    // Determine if a corner has been hit and spawn confetti if it has
     if (position.x - (size.x / 2) <= 0 && position.y - (size.y / 2) <= 0 && screen == play) {
         cornersHit++;
         spawnConfetti();
@@ -186,24 +185,29 @@ void Engine::checkBounds(unique_ptr<Rect> &dvd) {
         spawnConfetti();
     }
 
+    // Set the new position and velocity of the moving rectangle
     dvd->setPos(position);
     dvd->setVelocity(velocity);
 }
 
 void Engine::checkConfettiBounds(unique_ptr<Rect> &confetti) {
-
+    // Get position, velocity, and size of each confetti
     vec2 velocity = confetti->getVelocity();
     vec2 position = confetti->getPos();
     vec2 size = confetti->getSize();
 
+    // Update the position of each confetti
     position += velocity * deltaTime;
 
+    // Make the confetti velocity decrease by 2 to simulate gravity
     velocity.y = velocity.y - 2;
 
+    // Determine if there is still confetti on the screen
     if (position.y + (size.y / 2) >= 0 && screen == play) {
         confettiOnScreen = true;
     }
 
+    // Set confetti velocity and position
     confetti->setVelocity(velocity);
     confetti->setPos(position);
 }
@@ -221,6 +225,7 @@ void Engine::update() {
     if (screen == play) {
         checkBounds(dvd);
 
+        // Check the bounds of the confetti
         for (int i = 0; i < confetti.size(); i++) {
             checkConfettiBounds(confetti[i]);
         }
@@ -259,9 +264,6 @@ void Engine::render() {
                 confetti[i]->setUniforms();
                 confetti[i]->draw();
             }
-
-            // Clear the confetti vector
-            //confetti.clear();
 
             // Display rectangle
             dvd->setUniforms();
